@@ -63,6 +63,9 @@ static int do_get_info(void __user *arg)
 	}
 	
 #ifdef MODULE
+	if (ksu_bundled) {
+	    cmd.flags |= KSU_GET_INFO_FLAG_BUNDLED;
+	}
 	cmd.flags |= KSU_GET_INFO_FLAG_LKM;
 #endif
 
@@ -99,6 +102,9 @@ static int do_get_info_legacy(void __user *arg)
     struct ksu_get_info_legacy_cmd cmd = { .version = KERNEL_SU_VERSION, .flags = 0 };
 
 #ifdef MODULE
+    if (ksu_bundled) {
+        cmd.flags |= KSU_GET_INFO_FLAG_BUNDLED;
+    }
     cmd.flags |= KSU_GET_INFO_FLAG_LKM;
 #endif
 
