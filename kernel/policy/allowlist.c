@@ -29,6 +29,7 @@
 #include "policy/allowlist.h"
 #include "manager/manager_identity.h"
 #include "infra/su_mount_ns.h"
+#include "feature/shell_su_adb_only.h"
 
 #define FILE_MAGIC 0x7f4b5355 // ' KSU', u32
 #define FILE_FORMAT_VERSION 4 // u32
@@ -292,6 +293,10 @@ bool __ksu_is_allow_uid(uid_t uid)
 
 bool __ksu_is_allow_uid_for_current(uid_t uid)
 {
+	if (unlikely(uid == SHELL_UID) && !ksu_shell_su_allowed_for_current()) {
+		return false;
+	}
+
 	if (unlikely(uid == 0)) {
 		// already root, but only allow our domain.
 		return is_ksu_domain();
