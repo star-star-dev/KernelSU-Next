@@ -14,6 +14,7 @@ kernelsu-objs += infra/file_wrapper.o
 kernelsu-objs += infra/event_queue.o
 kernelsu-objs += infra/seccomp_cache.o
 kernelsu-objs += infra/su_mount_ns.o
+kernelsu-objs += infra/symbol_resolver.o
 
 ifneq ($(CONFIG_KSU_DISABLE_MANAGER),y)
 kernelsu-objs += manager/apk_sign.o
@@ -42,6 +43,7 @@ kernelsu-objs += supercall/supercall.o
 kernelsu-objs += feature/adb_root.o
 kernelsu-objs += feature/selinux_hide.o
 kernelsu-objs += feature/shell_su_adb_only.o
+kernelsu-objs += feature/module_blacklist.o
 
 ifdef KBUILD_EXTMOD
 ifeq ($(CONFIG_KSU_DISABLE_MANAGER),y)
@@ -158,7 +160,6 @@ ccflags-y += -DKSU_SYSCALL_TABLE_HOOK
 HAVE_KSU_HOOK := 0
 kernelsu-objs += hook/patch_memory.o
 kernelsu-objs += hook/syscall_table_hook.o
-kernelsu-objs += infra/symbol_resolver.o
 endif
 
 ifeq ($(CONFIG_KSU_MANUAL_HOOK), y)
