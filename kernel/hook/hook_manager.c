@@ -374,7 +374,11 @@ static void ksu_sys_enter_handler(void *data, struct pt_regs *regs, long id)
 			uid_t ruid = (uid_t)PT_REGS_PARM1(regs);
 			uid_t euid = (uid_t)PT_REGS_PARM2(regs);
 			uid_t suid = (uid_t)PT_REGS_PARM3(regs);
+#ifdef CONFIG_KSU_SUSFS
+			ksu_handle_setresuid(ruid, euid, suid);
+#else
 			ksu_handle_setresuid(current_uid().val, ruid);
+#endif // #ifdef CONFIG_KSU_SUSFS
 			return;
 		}
 	}

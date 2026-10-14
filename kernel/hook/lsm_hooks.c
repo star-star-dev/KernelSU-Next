@@ -102,9 +102,17 @@ static int ksu_inode_rename(struct inode *old_dir, struct dentry *old_dentry,
 static int ksu_task_fix_setuid(struct cred *new, const struct cred *old,
 			       int flags)
 {
+#ifdef CONFIG_KSU_SUSFS
+	kuid_t new_uid = new->uid;
+	kuid_t new_euid = new->euid;
+
+	return ksu_handle_setresuid((uid_t)new_uid.val, (uid_t)new_euid.val,
+				    (uid_t)new_uid.val);
+#else
 	kuid_t new_uid = new->uid;
 
 	return ksu_handle_setresuid(old->uid.val, new_uid.val);
+#endif // #ifdef CONFIG_KSU_SUSFS
 }
 
 #ifndef DEVPTS_SUPER_MAGIC
