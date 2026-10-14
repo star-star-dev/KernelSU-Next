@@ -286,6 +286,13 @@ out_flush:
 
 	smp_mb();
 	reset_avc_cache();
+
+#ifdef CONFIG_KSU_SUSFS
+	// Required on pre-5.10 (no SELINUX_POLICY_INSTEAD_SELINUX_SS): the
+	// setresuid hook only recognizes zygote via these SIDs, and the manager
+	// never gets its driver fd without them.
+	susfs_set_batch_sid();
+#endif // #ifdef CONFIG_KSU_SUSFS
 #endif
 }
 
