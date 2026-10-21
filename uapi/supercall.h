@@ -11,7 +11,13 @@
 // 4: add KSU_GET_INFO_FLAG_BUNDLED
 // 5: add EVENT_SERVICES with a start/skip result
 // 6: add KSU_IOCTL_LOOKUP_SYMBOLS and KSU_GET_INFO_FLAG_PREINIT; modules.rc and preinit may live under /metadata/vold/ksu
-#define KERNEL_SU_UAPI_VERSION 6
+//
+// This branch reports UAPI 5 on purpose: the released manager (v3.4.2) is built
+// with UAPI 5 and warns "manager too low" whenever the kernel advertises a
+// higher number (manager/app/.../Home.kt compares kernel vs manager UAPI). The
+// UAPI-6 code above is still present and compiles; only the advertised number is
+// pinned. Bump to 6 once a UAPI-6 manager ships.
+#define KERNEL_SU_UAPI_VERSION 5
 
 /* Magic numbers for reboot hook to install fd */
 #define KSU_INSTALL_MAGIC1 0xDEADBEEF
