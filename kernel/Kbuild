@@ -141,13 +141,14 @@ endif
 # ---------------------------------------------------------------------------
 # Fork release iteration for this branch.
 # Bump KSU_VERSION_SUFFIX by one whenever this branch is updated/repackaged, so
-# the reported kernel-side version advances even when the upstream commit count
-# does not. It is appended to the numeric version: 33318 -> 333181 -> 333182.
+# the reported tag advances even when the upstream commit count does not.
+# It is appended to the tag only (v3.4.2-legacy-susfs-v230.1). It deliberately
+# does NOT touch KSU_VERSION: that number is a versionCode the manager compares
+# against its own, and appending digits inflated it past the manager's value
+# (33320 -> 333201), which made the manager warn that it was out of date.
 # This does NOT change the UAPI version (pinned in uapi/supercall.h).
 # ---------------------------------------------------------------------------
 KSU_VERSION_SUFFIX ?= 1
-KSU_VERSION := $(KSU_VERSION)$(KSU_VERSION_SUFFIX)
-$(info -- KernelSU-Next fork version: $(KSU_VERSION))
 
 # Allow integrators to pin the reported version (e.g. when backporting
 # onto release branches where the commit count does not match releases)
@@ -172,7 +173,7 @@ ifdef KSU_VERSION_TAG_OVERRIDE
 KSU_VERSION_TAG := $(KSU_VERSION_TAG_OVERRIDE)
 else
 # Append the fork iteration so the displayed tag advances with KSU_VERSION_SUFFIX,
-# e.g. v3.4.0-legacy -> v3.4.0-legacy.1.
+# e.g. v3.4.2-legacy-susfs-v230 -> v3.4.2-legacy-susfs-v230.1.
 KSU_VERSION_TAG := $(KSU_VERSION_TAG).$(KSU_VERSION_SUFFIX)
 endif
 

@@ -23,16 +23,35 @@ Layout:
 Three separate numbers, deliberately not tied to each other:
 
 1. `KSU_VERSION` (`kernel/Kbuild`) — numeric versionCode the manager compares
-   against. Derived from the git commit count plus a constant.
+   against its own. Derived from the git commit count plus a constant. The
+   manager warns when the kernel reports a *higher* code than the manager, so
+   this number must stay in the same range as the manager's, and slightly below
+   it is the healthy state. Never append digits to it.
 2. `KSU_VERSION_SUFFIX` (`kernel/Kbuild`) — fork iteration. Bump it by one
-   whenever this branch is updated or repackaged so the reported version
-   advances even when the upstream commit count does not. It is appended to
-   `KSU_VERSION` and also to `KSU_VERSION_TAG`.
+   whenever this branch is updated or repackaged so the reported tag advances
+   even when the upstream commit count does not. It is appended to
+   `KSU_VERSION_TAG` only, never to `KSU_VERSION`.
 3. `KERNEL_SU_UAPI_VERSION` (`uapi/supercall.h`) — the UAPI contract version.
    The manager requires `kernelUAPIVersion == managerUAPIVersion` to be
    considered full-featured, so this must match the manager build. It is
    currently pinned to 5 for the v3.4.x manager; do not change it unless the
    manager is updated in lockstep.
+
+## The reported tag must resolve from this branch
+
+`KSU_VERSION_TAG` comes from `git describe --tags --abbrev=0`, which only
+considers tags reachable from the current branch. Each branch therefore needs
+its *own* tag series; a tag that exists on another branch will not be found.
+This bit the `legacy-susfs-v230` branch: it was rebuilt independently from
+`upstream/legacy`, so it did not descend from `v3.4.2-legacy`, and `describe`
+fell back to the much older `v3.1.0-legacy` — which is why the manager showed
+a kernel tag from a different release line.
+
+Tag each release with `<manager version>-legacy-susfs-<branch>`, matching the
+existing `legacy-susfs-v2` convention (`v3.2.0-legacy-susfs-v2`), e.g.
+`v3.4.2-legacy-susfs-v230`. Create it on the release commit and push the tag
+(`git push origin <tag>`); CI clones with tags, so `describe` will then resolve
+correctly.
 
 SUSFS version is read at build time from the *kernel tree*, not this repo:
 `kernel/Kbuild` and `kernel/Makefile` read `$(srctree)/include/linux/susfs.h`
