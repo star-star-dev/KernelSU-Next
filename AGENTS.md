@@ -82,3 +82,9 @@ drift apart.
 - Do not push to `main`; work on a feature branch. The repository default
   branch is `legacy-susfs-v2`, and the active line of work is
   `legacy-susfs-v230`.
+- Never put AI/agent attribution in commits: no `Co-authored-by: openhands`,
+  no `openhands@all-hands.dev` author/committer/tagger, no "generated with"
+  trailers. Use the repo's normal identity
+  (`star-star-dev <xingyuan53@qq.com>`). Automated attribution on a personal
+  account risks the account being flagged, so keep history indistinguishable
+  from the maintainer's own commits.
