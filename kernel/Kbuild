@@ -139,16 +139,22 @@ KSU_VERSION := $(KSU_VERSION_FALLBACK)
 endif
 
 # ---------------------------------------------------------------------------
-# Fork release iteration for this branch.
-# Bump KSU_VERSION_SUFFIX by one whenever this branch is updated/repackaged, so
-# the reported tag advances even when the upstream commit count does not.
-# It is appended to the tag only (v3.4.2-legacy-susfs-v230.1). It deliberately
-# does NOT touch KSU_VERSION: that number is a versionCode the manager compares
-# against its own, and appending digits inflated it past the manager's value
-# (33320 -> 333201), which made the manager warn that it was out of date.
-# This does NOT change the UAPI version (pinned in uapi/supercall.h).
+# Fork release iteration for this branch, derived from git so it never has to be
+# bumped by hand: the number of commits since the nearest reachable tag (the
+# branch's own release marker, e.g. v3.4.2-legacy-susfs-v230). Moving that tag
+# restarts the count at zero. It is appended to the tag only
+# (v3.4.2-legacy-susfs-v230.1).
+# It deliberately does NOT touch KSU_VERSION: that number is a versionCode the
+# manager compares against its own, and appending digits inflated it past the
+# manager's value (33320 -> 333201), which made the manager warn that it was out
+# of date. This does NOT change the UAPI version (pinned in uapi/supercall.h).
+# Override with KSU_VERSION_SUFFIX=<n> to pin it.
 # ---------------------------------------------------------------------------
-KSU_VERSION_SUFFIX ?= 1
+ifdef KSU_GIT_VERSION_VALID
+KSU_VERSION_SUFFIX ?= $(shell cd $(GIT_ROOT) && $(LPATH) git rev-list --count $(KSU_GIT_TAG)..HEAD 2>/dev/null)
+endif
+# Fall back to 1 when there is no git repo, no tag, or an empty count.
+KSU_VERSION_SUFFIX := $(if $(KSU_VERSION_SUFFIX),$(KSU_VERSION_SUFFIX),1)
 
 # Allow integrators to pin the reported version (e.g. when backporting
 # onto release branches where the commit count does not match releases)

@@ -27,10 +27,11 @@ Three separate numbers, deliberately not tied to each other:
    manager warns when the kernel reports a *higher* code than the manager, so
    this number must stay in the same range as the manager's, and slightly below
    it is the healthy state. Never append digits to it.
-2. `KSU_VERSION_SUFFIX` (`kernel/Kbuild`) — fork iteration. Bump it by one
-   whenever this branch is updated or repackaged so the reported tag advances
-   even when the upstream commit count does not. It is appended to
-   `KSU_VERSION_TAG` only, never to `KSU_VERSION`.
+2. `KSU_VERSION_SUFFIX` (`kernel/Kbuild`) — fork iteration, derived from git as
+   the number of commits since the nearest reachable tag. No manual bump: every
+   commit past the branch's release tag raises it, and re-pointing the tag
+   restarts it at zero. It is appended to `KSU_VERSION_TAG` only, never to
+   `KSU_VERSION`. Override with `KSU_VERSION_SUFFIX=<n>` to pin it.
 3. `KERNEL_SU_UAPI_VERSION` (`uapi/supercall.h`) — the UAPI contract version.
    The manager requires `kernelUAPIVersion == managerUAPIVersion` to be
    considered full-featured, so this must match the manager build. It is
@@ -58,21 +59,22 @@ SUSFS version is read at build time from the *kernel tree*, not this repo:
 and extract `SUSFS_VERSION`. That header lives in `M62-backport`. If the banner
 shows a stale SUSFS version, check the kernel tree, not this repo.
 
-## Rule: bump the fork version when adapting upstream changes
+## Rule: no manual version bump when adapting upstream changes
 
 When you rebase or pull in new upstream KernelSU-Next commits onto
 `legacy-susfs-v230`:
 
 1. Re-apply the SUSFS glue and any legacy-kernel fixes.
-2. Bump `KSU_VERSION_SUFFIX` by one.
+2. Leave `KSU_VERSION_SUFFIX` alone; it follows the commit count. Re-point the
+   branch's release tag (`v3.4.2-legacy-susfs-v230`) only when you want the
+   reported tag to restart its iteration.
 3. Leave `KERNEL_SU_UAPI_VERSION` alone unless the manager is updated too.
 4. Verify the kernel tree still builds.
 
 Then, in `star-star-dev/M62-backport`, update the `KernelSU` submodule pointer
-to the new commit here and bump the kernel/package version in the same change.
-That repo's `AGENTS.md` documents the version scheme; the short version is that
-the kernel version tracks the bundled SUSFS release, and CI fails if the two
-drift apart.
+to the new commit here. That repo's `AGENTS.md` documents the version scheme;
+its kernel version tracks the bundled SUSFS release and its patch level is a
+commit count, so neither side needs a manual bump.
 
 ## Conventions
 
