@@ -27,11 +27,11 @@ Three separate numbers, deliberately not tied to each other:
    manager warns when the kernel reports a *higher* code than the manager, so
    this number must stay in the same range as the manager's, and slightly below
    it is the healthy state. Never append digits to it.
-2. `KSU_VERSION_SUFFIX` (`kernel/Kbuild`) — fork iteration, derived from git as
-   the number of commits since the nearest reachable tag. No manual bump: every
-   commit past the branch's release tag raises it, and re-pointing the tag
-   restarts it at zero. It is appended to `KSU_VERSION_TAG` only, never to
-   `KSU_VERSION`. Override with `KSU_VERSION_SUFFIX=<n>` to pin it.
+2. `KSU_VERSION_TAG` (`kernel/Kbuild`) — the human-readable release tag,
+   reported verbatim from `git describe --tags --abbrev=0`. It follows upstream
+   with no fork iteration appended, so a rebuild of this branch reports the same
+   tag as the release it is based on. Only the kernel tree's own version
+   distinguishes fork rebuilds.
 3. `KERNEL_SU_UAPI_VERSION` (`uapi/supercall.h`) — the UAPI contract version.
    The manager requires `kernelUAPIVersion == managerUAPIVersion` to be
    considered full-featured, so this must match the manager build. It is
@@ -65,16 +65,16 @@ When you rebase or pull in new upstream KernelSU-Next commits onto
 `legacy-susfs-v230`:
 
 1. Re-apply the SUSFS glue and any legacy-kernel fixes.
-2. Leave `KSU_VERSION_SUFFIX` alone; it follows the commit count. Re-point the
-   branch's release tag (`v3.4.2-legacy-susfs-v230`) only when you want the
-   reported tag to restart its iteration.
+2. Leave the version numbers alone. `KSU_VERSION` and `KSU_VERSION_TAG` both
+   follow upstream, and the fork rebuild is identified by the kernel tree's own
+   version in `star-star-dev/M62-backport`.
 3. Leave `KERNEL_SU_UAPI_VERSION` alone unless the manager is updated too.
 4. Verify the kernel tree still builds.
 
 Then, in `star-star-dev/M62-backport`, update the `KernelSU` submodule pointer
 to the new commit here. That repo's `AGENTS.md` documents the version scheme;
 its kernel version tracks the bundled SUSFS release and its patch level is a
-commit count, so neither side needs a manual bump.
+commit count, so no side needs a manual bump.
 
 ## Conventions
 
